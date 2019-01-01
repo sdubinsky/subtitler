@@ -1,4 +1,5 @@
 require 'json'
+require 'uri'
 
 class Subtitler
   class ParseException < StandardError;  end
@@ -11,13 +12,14 @@ class Subtitler
 
   private
 
+  #URLencoding commas doesn't seem to work
   def self.text_transforms subtitles
-    subtitles.map do |subtitle|
+    transformations = subtitles.map do |subtitle|
       start_time = subtitle['start-timing'].split(":")[1]
       end_time = subtitle['end-timing'].split(":")[1]
-      text = subtitle['text']
+      text = URI.escape subtitle['text'].gsub(",", ""), "?!' "
       "l_text:arial_40:#{text},so_#{start_time},eo_#{end_time}"
-    end.join("/")
+    end.join "/"
   end
 
   def self.parse json
