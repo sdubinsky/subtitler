@@ -2,6 +2,7 @@ require 'json'
 require 'pry'
 
 class Subtitler
+  class ParseException < StandardError;  end
   def self.addSubtitlesToVideo video_id, subtitles_json
     cloud_name = "candidate-evaluation"
     puts "adding subtitles"
@@ -19,7 +20,17 @@ class Subtitler
     end.join("/")
   end
 
-  def self.parse_time time
-    
+  def self.validate subtitles
+    subtitles.each do |subtitle|
+      raise ParseException unless subtitle.keys.sort == ['end-timing', 'start-timing', 'text']
+      validate_time subtitle['start-timing']
+      validate_time subtitle['end-timing']
+    end
+  end
+
+  #The time format validation is probably stricter than really necessary.
+  def self.validate_time time
+    raise ParseException unless /\A\d:\d\d.\d\z/ =~ time
   end
 end
+
