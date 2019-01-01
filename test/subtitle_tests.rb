@@ -1,4 +1,6 @@
 require 'minitest/autorun'
+require 'json'
+
 require_relative '../lib/subtitler'
 class SubtitleTest < Minitest::Test
   def test_parser_single
@@ -67,5 +69,22 @@ class SubtitleTest < Minitest::Test
     end
   end
 
-  
+  def test_generates_url
+    subtitles = {
+      "Subtitles" => [
+        {
+          'start-timing' => '0:10.8',
+          'end-timing' => '0:13.3',
+          'text' => 'Hello World'
+        },
+        {
+          'start-timing' => '0:16.2',
+          'end-timing' => '0:20.6',
+          'text' => 'this is the subtitles tool'
+        }
+      ]
+    }
+    url = Subtitler.addSubtitlesToVideo "The_Present", subtitles.to_json
+    assert_equal "https://res.cloudinary.com/candidate-evaluation/video/upload/v1545227210/l_text:arial_40:Hello World,so_10.8,eo_13.3/l_text:arial_40:this is the subtitles tool,so_16.2,eo_20.6/The_Present.mp4", url
+  end
 end

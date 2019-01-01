@@ -5,8 +5,9 @@ class Subtitler
   class ParseException < StandardError;  end
   def self.addSubtitlesToVideo video_id, subtitles_json
     cloud_name = "candidate-evaluation"
-    puts "adding subtitles"
     subtitles = JSON.parse(subtitles_json)['Subtitles']
+    subtitles = text_transforms subtitles
+    "https://res.cloudinary.com/#{cloud_name}/video/upload/v1545227210/#{subtitles}/#{video_id}.mp4"
   end
 
   private
