@@ -15,8 +15,8 @@ class Subtitler
   #URLencoding commas doesn't seem to work
   def self.text_transforms subtitles
     transformations = subtitles.map do |subtitle|
-      start_time = subtitle['start-timing'].split(":")[1]
-      end_time = subtitle['end-timing'].split(":")[1]
+      start_time = parse_time subtitle['start-timing']
+      end_time = parse_time subtitle['end-timing']
       text = URI.escape subtitle['text'].gsub(",", ""), "?!' "
       "l_text:arial_40:#{text},so_#{start_time},eo_#{end_time}"
     end.join "/"
@@ -36,6 +36,11 @@ class Subtitler
   #The time format validation is probably stricter than really necessary.
   def self.validate_time time
     raise ParseException unless /\A\d:\d\d.\d\z/ =~ time
+  end
+
+  def self.parse_time time
+    time = time.split ":"
+    time[0].to_i * 60 + time[1].to_i
   end
 end
 
